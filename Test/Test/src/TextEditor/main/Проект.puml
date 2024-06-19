@@ -1,0 +1,91 @@
+@startuml
+
+
+
+  class TextEditor {
+
+textPanel: TextPanel
+controlPanel: ControlPanel
+controlFile: ControlFile
++ TextEditor()
+initComponents()
+initKeyBindings()
+}
+
+  class TextPanel {
+
+textPane: JTextPane
+scrollPane: JScrollPane
++ TextPanel()
++ getScrollPane(): JScrollPane
++ getTextPane(): JTextPane
+}
+
+  class ControlPanel {
+
+panel: JPanel
+fontChoice: JComboBox<String>
+fontSizeChoice: JComboBox<Integer>
+fontFormatChoice: JComboBox<String>
+textPanel: TextPanel
++ ControlPanel(textPanel: TextPanel)
+createControlPanel()
++ getPanel(): JPanel
+}
+
+  class ControlFile {
+
+textPanel: TextPanel
+frame: JFrame
+currentFile: File
++ ControlFile(textPanel: TextPanel, frame: JFrame)
++ newFile()
++ saveAs()
++ save(file: File)
++ save()
++ open()
++ getCurrentFile(): File
++ setCurrentFile(file: File)
+}
+
+  abstract class Action {
+    + actionPerformed(e: ActionEvent)
+  }
+
+  class CompositeAction extends Action {
+
+firstAction: Action
+secondAction: Action
++ CompositeAction(firstAction: Action, secondAction: Action)
+}
+
+  class DatabaseInsertAction extends Action {
+
+textPane: JTextPane
+dbUrl: String
+user: String
+password: String
++ DatabaseInsertAction(textPane: JTextPane, dbUrl: String, user: String, password: String)
+insertDataFromDatabase(query: String)
+}
+
+  class ImagePasteAction extends Action {
+
+textPane: JTextPane
++ ImagePasteAction(textPane: JTextPane)
+}
+
+  TextEditor -->  TextPanel : contains
+  TextEditor -->  ControlPanel : contains
+  TextEditor -->  ControlFile : contains
+  ControlPanel -->  TextPanel : interacts with
+  ControlFile -->  TextPanel : interacts with
+  CompositeAction ..|> Action : extends
+  DatabaseInsertAction ..|> Action : extends
+  ImagePasteAction ..|> Action : extends
+  Action <.. TextPanel : depends on
+
+}
+
+
+@enduml
