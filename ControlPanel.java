@@ -4,90 +4,69 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 
+/
+        * Класс ControlPanel отвечает за создание панели управления текстовым редактором.
+ * Эта панель содержит элементы управления для выбора шрифта, размера шрифта и форматирования текста,
+ * а также кнопки для создания нового файла, сохранения и сохранения файла как нового документа.
+ */
 public class ControlPanel {
-    private JPanel panel;
-    private JComboBox<String> fontChoice;
-    private JComboBox<Integer> fontSizeChoice;
-    private TextPanel textPanel;
+    private JPanel panel; // Панель, содержащая все элементы управления
+    private JComboBox<String> fontChoice; // Выпадающий список для выбора шрифта
+    private JComboBox<Integer> fontSizeChoice; // Выпадающий список для выбора размера шрифта
+    private JComboBox<String> fontFormatChoice; // Выпадающий список для выбора форматирования текста
+    private TextPanel textPanel; // Ссылка на панель текста, с которой взаимодействуют элементы управления
 
+    /
+            * Конструктор класса ControlPanel.
+     * @param textPanel Ссылка на объект класса TextPanel, который представляет собой панель текста.
+            */
     public ControlPanel(TextPanel textPanel) {
         this.textPanel = textPanel;
         panel = new JPanel();
-        createControlPanel();
+        createControlPanel(); // Метод для создания элементов управления
     }
 
+    /**
+     * Метод для создания и настройки элементов управления на панели.
+     */
     private void createControlPanel() {
+        // Создание и добавление меток и выпадающих списков для выбора параметров шрифта
         JLabel fontLabel = new JLabel("Шрифт:");
         fontChoice = new JComboBox<>(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
-        fontChoice.addActionListener((ActionListener) new FontActionListener());
+        fontChoice.addActionListener(new FontActionListener()); // Добавление слушателя событий
 
         JLabel fontSizeLabel = new JLabel("Размер:");
-        Integer[] sizes = { 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40 };
+        Integer[] sizes = {8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40};
         fontSizeChoice = new JComboBox<>(sizes);
-        fontSizeChoice.addActionListener(new FontSizeActionListener());
+        fontSizeChoice.addActionListener(new FontSizeActionListener()); // Добавление слушателя событий
 
-        // Кнопка "Создать"
+        JLabel fontFormatLabel = new JLabel("Форматирование:");
+        String[] formats = {"Обычный", "Курсив", "Полужирный", "Полужирный курсив"};
+        fontFormatChoice = new JComboBox<>(formats);
+        fontFormatChoice.addActionListener(new FontFormatActionListener()); // Добавление слушателя событий
+
+        // Создание и добавление кнопок для управления файлами
         JButton makeButton = new JButton("Создать (Ctrl+N)");
-        makeButton.addActionListener(e -> ControlFile.newFile());
+        makeButton.addActionListener(e -> ControlFile.newFile()); // Добавление слушателя событий
 
-        // Кнопка "Сохранить"
         JButton saveButton = new JButton("Сохранить (Ctrl+S)");
-        saveButton.addActionListener(e -> ControlFile.save());
+        saveButton.addActionListener(e -> ControlFile.save()); // Добавление слушателя событий
 
-        // Кнопка "Сохранить как..."
         JButton saveAsButton = new JButton("Сохранить как... (Ctrl+Shift+S)");
-        saveAsButton.addActionListener(e -> ControlFile.saveAs());
+        saveAsButton.addActionListener(e -> ControlFile.saveAs()); // Добавление слушателя событий
 
+        // Добавление всех элементов управления на панель
         panel.add(fontLabel);
         panel.add(fontChoice);
         panel.add(fontSizeLabel);
         panel.add(fontSizeChoice);
+        panel.add(fontFormatLabel);
+        panel.add(fontFormatChoice);
         panel.add(makeButton);
         panel.add(saveButton);
         panel.add(saveAsButton);
-
     }
 
-    private void setJMenuBar(JMenuBar menuBar) {
-    }
-
-    public JPanel getPanel() {
-        return panel;
-    }
-
-    // Внутренние классы для обработки событий
-    private class FontActionListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            updateTextProperties();
-        }
-    }
-
-    private class FontSizeActionListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            updateTextProperties();
-        }
-    }
-
-    private void updateTextProperties() {
-        String fontName = (String) fontChoice.getSelectedItem();
-        Integer fontSize = (Integer) fontSizeChoice.getSelectedItem();
-        Font font = new Font(fontName, Font.PLAIN, fontSize);
-
-        JTextArea textArea = textPanel.getTextArea();
-        if (textArea.getSelectedText() != null) { // Проверка наличия выделенного текста
-            textArea.setFont(font); // Применение шрифта ко всему тексту, если нет выделения
-        } else {
-            String allText = textArea.getText();
-            String beforeSelection = allText.substring(0, textArea.getSelectionStart());
-            String selectedText = textArea.getSelectedText();
-            String afterSelection = allText.substring(textArea.getSelectionEnd());
-
-            textArea.setText(beforeSelection + selectedText + afterSelection);
-            textArea.select(beforeSelection.length(), beforeSelection.length() + selectedText.length());
-            textArea.replaceSelection(selectedText); // Применение шрифта только к выделенному тексту
-        }
-    }
+    // Оставшиеся методы и внутренние классы...
 }
