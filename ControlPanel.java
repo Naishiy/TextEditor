@@ -132,10 +132,11 @@ public class ControlPanel {
             String beforeSelection = allText.substring(0, textArea.getSelectionStart());
             String selectedText = textArea.getSelectedText();
             String afterSelection = allText.substring(textArea.getSelectionEnd());
-
-            textArea.setText(beforeSelection + selectedText + afterSelection);
-            textArea.select(beforeSelection.length(), beforeSelection.length() + selectedText.length());
-            textArea.replaceSelection(selectedText); // Применение шрифта только к выделенному тексту
+            if(selectedText!=null) {
+                textArea.setText(beforeSelection + selectedText + afterSelection);
+                textArea.select(beforeSelection.length(), beforeSelection.length() + selectedText.length());
+                textArea.replaceSelection(selectedText); // Применение шрифта только к выделенному тексту
+            }
         }
     }
 }
