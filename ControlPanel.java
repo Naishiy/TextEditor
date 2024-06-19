@@ -4,13 +4,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 
 public class ControlPanel {
     private JPanel panel;
     private JComboBox<String> fontChoice;
     private JComboBox<Integer> fontSizeChoice;
+    private JComboBox<String> fontFormatChoice;
     private TextPanel textPanel;
 
     public ControlPanel(TextPanel textPanel) {
@@ -25,19 +24,24 @@ public class ControlPanel {
         fontChoice.addActionListener((ActionListener) new FontActionListener());
 
         JLabel fontSizeLabel = new JLabel("Размер:");
-        Integer[] sizes = { 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40 };
+        Integer[] sizes = {8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40};
         fontSizeChoice = new JComboBox<>(sizes);
         fontSizeChoice.addActionListener(new FontSizeActionListener());
 
-        // Кнопка "Создать"
+        JLabel fontFormatLabel = new JLabel("Форматирование:");
+        String[] formats = {"Обычный", "Курсив", "Полужирный", "Полужирный курсив"};
+        fontFormatChoice = new JComboBox<>(formats);
+        fontFormatChoice.addActionListener(new FontFormatActionListener());
+
+        JButton openButton = new JButton("Открыть (Ctrl+O)");
+        openButton.addActionListener(e -> ControlFile.open());
+
         JButton makeButton = new JButton("Создать (Ctrl+N)");
         makeButton.addActionListener(e -> ControlFile.newFile());
 
-        // Кнопка "Сохранить"
         JButton saveButton = new JButton("Сохранить (Ctrl+S)");
         saveButton.addActionListener(e -> ControlFile.save());
 
-        // Кнопка "Сохранить как..."
         JButton saveAsButton = new JButton("Сохранить как... (Ctrl+Shift+S)");
         saveAsButton.addActionListener(e -> ControlFile.saveAs());
 
@@ -45,10 +49,28 @@ public class ControlPanel {
         panel.add(fontChoice);
         panel.add(fontSizeLabel);
         panel.add(fontSizeChoice);
+        panel.add(fontFormatLabel);
+        panel.add(fontFormatChoice);
+        panel.add(openButton);
         panel.add(makeButton);
         panel.add(saveButton);
         panel.add(saveAsButton);
 
+        JButton insertDbButton = new JButton("Вставить из БД (Ctrl+D)");
+        insertDbButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Здесь должен быть ваш код для вызова DatabaseInsertAction
+                JTextPane textPane = textPanel.getTextPane();
+                String dbUrl = "jdbc:ваш_драйвер_базы_данных:адрес"; // Замените на ваш URL базы данных
+                String user = "ваш_логин"; // Замените на ваш логин
+                String password = "ваш_пароль"; // Замените на ваш пароль
+                DatabaseInsertAction databaseInsertAction = new DatabaseInsertAction(textPane, dbUrl, user, password);
+                databaseInsertAction.actionPerformed(e);
+            }
+        });
+
+        panel.add(insertDbButton);
     }
 
     private void setJMenuBar(JMenuBar menuBar) {
@@ -61,22 +83,47 @@ public class ControlPanel {
     // Внутренние классы для обработки событий
     private class FontActionListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            updateTextProperties();
+            updateTextProperties(String.valueOf(Font.PLAIN));
         }
     }
 
     private class FontSizeActionListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            updateTextProperties();
+
+            updateTextProperties(String.valueOf(Font.PLAIN));
         }
     }
 
-    private void updateTextProperties() {
+    private class FontFormatActionListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            String selectedFormat = (String) fontFormatChoice.getSelectedItem();
+            updateTextProperties(selectedFormat);
+        }
+    }
+
+    private void updateTextProperties(String selectedFormat) {
         String fontName = (String) fontChoice.getSelectedItem();
         Integer fontSize = (Integer) fontSizeChoice.getSelectedItem();
-        Font font = new Font(fontName, Font.PLAIN, fontSize);
+        int fontStyle;
+        switch (selectedFormat) {
+            case "Обычный":
+                fontStyle = Font.PLAIN;
+                break;
+            case "Курсив":
+                fontStyle = Font.ITALIC;
+                break;
+            case "Полужирный":
+                fontStyle = Font.BOLD;
+                break;
+            case "Полужирный курсив":
+                fontStyle = Font.BOLD | Font.ITALIC;
+                break;
+            default:
+                fontStyle = Font.PLAIN; // На случай, если выбор не удается распознать
+        }
+        Font font = new Font(fontName, fontStyle, fontSize);
 
-        JTextArea textArea = textPanel.getTextArea();
+        JTextPane textArea = textPanel.getTextPane();
         if (textArea.getSelectedText() != null) { // Проверка наличия выделенного текста
             textArea.setFont(font); // Применение шрифта ко всему тексту, если нет выделения
         } else {
