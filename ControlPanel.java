@@ -126,7 +126,8 @@ public class ControlPanel {
         JTextPane textArea = textPanel.getTextPane();
         if (textArea.getSelectedText() != null) { // Проверка наличия выделенного текста
             textArea.setFont(font); // Применение шрифта ко всему тексту, если нет выделения
-        } else {
+        }
+        else {
             String allText = textArea.getText();
             String beforeSelection = allText.substring(0, textArea.getSelectionStart());
             String selectedText = textArea.getSelectedText();

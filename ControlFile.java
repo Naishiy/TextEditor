@@ -19,6 +19,7 @@ public class ControlFile {
     public static void newFile() {
         textPanel.getTextPane().setText("");
         currentFile = null;
+        frame.setTitle("Новый файл");
     }
 
     public static void saveAs() {
@@ -30,6 +31,7 @@ public class ControlFile {
                 fileToSave = new File(fileToSave.getParentFile(), fileToSave.getName() + ".txt");
             }
             save(fileToSave);
+            frame.setTitle(fileToSave.getName());
         }
     }
 
@@ -53,8 +55,6 @@ public class ControlFile {
         }
     }
 
-    // В классе ControlFile
-
     public static void open() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter("Текстовые файлы", "txt"));
@@ -63,6 +63,7 @@ public class ControlFile {
             try (BufferedReader reader = new BufferedReader(new FileReader(fileToOpen))) {
                 textPanel.getTextPane().read(reader, null);
                 currentFile = fileToOpen;
+                frame.setTitle(fileToOpen.getName()); // Установка заголовка окна в имя файла
             } catch (IOException e) {
                 e.printStackTrace();
             }
