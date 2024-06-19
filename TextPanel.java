@@ -3,19 +3,19 @@ package TextEditor;
 import javax.swing.*;
 
 public class TextPanel {
-    private JTextArea textArea;
+    private JTextPane textPane;
     private JScrollPane scrollPane;
 
     public TextPanel() {
-        textArea = new JTextArea();
-        scrollPane = new JScrollPane(textArea);
+        textPane = new JTextPane();
+        scrollPane = new JScrollPane(textPane);
     }
 
     public JScrollPane getScrollPane() {
         return scrollPane;
     }
 
-    public JTextArea getTextArea() {
-        return textArea;
+    public JTextPane getTextPane() {
+        return textPane;
     }
 }

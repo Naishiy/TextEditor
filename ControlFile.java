@@ -17,7 +17,7 @@ public class ControlFile {
     }
 
     public static void newFile() {
-        textPanel.getTextArea().setText("");
+        textPanel.getTextPane().setText("");
         currentFile = null;
     }
 
@@ -31,7 +31,7 @@ public class ControlFile {
     public static void save(File file) {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-            writer.write(textPanel.getTextArea().getText());
+            writer.write(textPanel.getTextPane().getText());
             writer.close();
             currentFile = file;
         } catch (IOException e) {
